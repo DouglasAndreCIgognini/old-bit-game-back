@@ -1,6 +1,8 @@
 import * as cheerio from 'cheerio'
 import fs from 'fs/promises'
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+
 async function scrapperRomsEdgeEmu(platform, letter) {
     const baseUrl = 'https://edgeemu.net'
 
@@ -36,14 +38,12 @@ async function scrapperRomsEdgeEmu(platform, letter) {
             })
         })
 
-        // cria pasta da plataforma
-        await fs.mkdir(`./roms/${platform}`, {
+        await fs.mkdir(`../roms/${platform}`, {
             recursive: true
         })
 
-        // salva o arquivo da letra
         await fs.writeFile(
-            `./roms/${platform}/${letter}.json`,
+            `../roms/${platform}/${letter}.json`,
             JSON.stringify(roms, null, 2),
             'utf-8'
         )
@@ -51,10 +51,11 @@ async function scrapperRomsEdgeEmu(platform, letter) {
         console.log(
             `[OK] ${platform} - ${letter} -> ${roms.length} ROMs`
         )
+
     } catch (error) {
         console.error(
             `Erro em ${platform} - ${letter}:`,
-            error
+            error.message
         )
     }
 }
@@ -91,7 +92,7 @@ const letters = [
 
 for (const letter of letters) {
     await scrapperRomsEdgeEmu(
-        'nintendo-snes',
+        'commodore-64',
         letter
     )
 }

@@ -23,5 +23,6 @@ lerna-debug.log*
 .temp
 .tmp
 
-# roms link
+# dump roms
 /roms
+cache.json
