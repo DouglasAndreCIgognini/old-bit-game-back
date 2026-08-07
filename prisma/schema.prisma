@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  moduleFormat    = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Game {
+  id          Int             @id @default(autoincrement())
+  title       String
+  link        String
+  description String?
+  imageUrl    String?         @map("image_url")
+  createdAt   DateTime?       @default(now()) @map("created_at")
+  updatedAt   DateTime?       @updatedAt @map("updated_at")
+
+  categories  CategoryGame[]
+
+  @@map("game")
+}
+
+
+model Category {
+  id          Int             @id @default(autoincrement())
+  name        String
+  createdAt   DateTime?       @default(now()) @map("created_at")
+  updatedAt   DateTime?       @updatedAt @map("updated_at")
+
+  games       CategoryGame[]
+
+  @@map("category")
+}
+
+
+model CategoryGame {
+  id         Int @id @default(autoincrement())
+
+  gameId     Int @map("game_id")
+  categoryId Int @map("category_id")
+
+  game       Game @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([gameId, categoryId])
+  @@map("category_game")
+}

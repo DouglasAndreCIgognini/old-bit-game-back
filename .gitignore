@@ -27,3 +27,4 @@ lerna-debug.log*
 # dump roms
 /roms
 cache.json
+/src/generated/prisma
