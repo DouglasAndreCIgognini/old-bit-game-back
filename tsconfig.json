@@ -23,4 +23,13 @@
     "noFallthroughCasesInSwitch": false,
     "types": ["node"]
   }
+  ,
+  "exclude": [
+    "node_modules",
+    "dist",
+    "prisma",
+    "prisma.config.ts",
+    "prisma/seed.ts",
+    "roms"
+  ]
 }
