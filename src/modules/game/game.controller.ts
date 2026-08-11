@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { GameService } from './game.service';
 
 @Controller('game')
@@ -16,5 +16,10 @@ export class GameController {
       limit: Number(limit),
       orderBy,
     });
+  }
+
+  @Get(':id')
+  async getGameById(@Param('id') id: number) {
+    return this.gameService.getGameById(Number(id));
   }
 }

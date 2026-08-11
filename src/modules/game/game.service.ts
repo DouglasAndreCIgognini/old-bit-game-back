@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { GameResponseDto } from '../../dtos/game';
 
@@ -40,6 +40,10 @@ export class GameService {
       this.prisma.game.count(),
     ]);
 
+    if (!data || data.length === 0) {
+      throw new NotFoundException('No games found');
+    }
+
     return {
       data,
       meta: {
@@ -49,5 +53,29 @@ export class GameService {
         totalPages: Math.ceil(total / limit),
       },
     };
+  }
+
+  async getGameById(id: number) {
+    const game = await this.prisma.game.findUnique({
+      where: { id },
+      include: {
+        categories: {
+          select: {
+            category: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!game) {
+      throw new NotFoundException('Game not found');
+    }
+
+    return game;
   }
 }
