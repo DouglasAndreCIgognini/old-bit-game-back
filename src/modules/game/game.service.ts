@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { GameResponseDto } from '../../dtos/game';
+import { getGameDomainUrl } from '../../utils/url';
+import { Response } from 'express';
 
 @Injectable()
 export class GameService {
@@ -77,5 +79,33 @@ export class GameService {
     }
 
     return game;
+  }
+
+  async getPlayGameById(id: number, res: Response) {
+    try {
+      const { link } = await this.getGameById(id);
+
+      const response = await fetch(link, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0',
+          Referer: getGameDomainUrl(link),
+        },
+      });
+
+      if (!response.ok) {
+        throw new HttpException('Error to load ROM', response.status);
+      }
+
+      res.setHeader(
+        'Content-Type',
+        response.headers.get('content-type') || 'application/zip',
+      );
+
+      const buffer = Buffer.from(await response.arrayBuffer());
+      return buffer;
+    } catch (err: any) {
+      console.error(err);
+      throw new HttpException('Internal Error', 500);
+    }
   }
 }

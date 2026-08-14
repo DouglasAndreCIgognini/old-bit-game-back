@@ -1,5 +1,6 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, Res } from '@nestjs/common';
 import { GameService } from './game.service';
+import type { Response } from 'express';
 
 @Controller('game')
 export class GameController {
@@ -21,5 +22,11 @@ export class GameController {
   @Get(':id')
   async getGameById(@Param('id') id: number) {
     return this.gameService.getGameById(Number(id));
+  }
+
+  @Get(':id/play')
+  async getPlayGameById(@Param('id') id: number, @Res() res: Response) {
+    const buffer = await this.gameService.getPlayGameById(Number(id), res);
+    return res.send(buffer);
   }
 }
