@@ -13,6 +13,7 @@ model Game {
   link        String   @unique
   title       String
   platform    String
+  core        String
   description String?
   image_url   String?
   created_at  DateTime @default(now())

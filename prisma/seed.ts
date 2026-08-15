@@ -165,7 +165,8 @@ async function main() {
 
             update: {
               title: gameData.title,
-              platform: core,
+              platform: platform.replaceAll('-', ' '),
+              core,
               description: gameData.description ?? null,
               image_url: gameData.image_url ?? null,
             },
@@ -173,7 +174,8 @@ async function main() {
             create: {
               title: gameData.title,
               link: gameData.link,
-              platform: core,
+              platform: platform.replaceAll('-', ' '),
+              core,
               description: gameData.description ?? null,
               image_url: gameData.image_url ?? null,
             },

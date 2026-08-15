@@ -58,27 +58,32 @@ export class GameService {
   }
 
   async getGameById(id: number) {
-    const game = await this.prisma.game.findUnique({
-      where: { id },
-      include: {
-        categories: {
-          select: {
-            category: {
-              select: {
-                id: true,
-                name: true,
+    try {
+      const game = await this.prisma.game.findUnique({
+        where: { id },
+        include: {
+          categories: {
+            select: {
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                },
               },
             },
           },
         },
-      },
-    });
+      });
 
-    if (!game) {
-      throw new NotFoundException('Game not found');
+      if (!game) {
+        throw new NotFoundException('Game not found');
+      }
+
+      return game;
+    } catch (err: any) {
+      console.error(err);
+      throw new HttpException('Internal Error', 500);
     }
-
-    return game;
   }
 
   async getPlayGameById(id: number, res: Response) {
