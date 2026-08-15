@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { GameResponseDto } from '../../dtos/game';
 import { getGameDomainUrl } from '../../utils/url';
 import { Response } from 'express';
+import { GameWhereInput } from '../../generated/prisma/models';
 
 @Injectable()
 export class GameService {
@@ -12,20 +13,38 @@ export class GameService {
     page = 1,
     limit = 10,
     orderBy = 'title',
+    order = 'asc',
+    q = '',
+    platform = '',
   }: {
     page?: number;
     limit?: number;
     orderBy?: string;
+    order?: string;
+    q?: string;
+    platform?: string;
   }): Promise<GameResponseDto> {
     const skip = (page - 1) * limit;
+
+    const where: GameWhereInput = {
+      title: {
+        contains: q,
+        mode: 'insensitive',
+      },
+      platform: {
+        contains: platform,
+        mode: 'insensitive',
+      },
+    };
 
     const [data, total] = await Promise.all([
       this.prisma.game.findMany({
         skip,
         take: limit,
         orderBy: {
-          [orderBy]: 'asc',
+          [orderBy]: order,
         },
+        where,
         include: {
           categories: {
             select: {
@@ -39,7 +58,7 @@ export class GameService {
           },
         },
       }),
-      this.prisma.game.count(),
+      this.prisma.game.count({ where }),
     ]);
 
     if (!data || data.length === 0) {
@@ -88,7 +107,7 @@ export class GameService {
 
   async getPlayGameById(id: number, res: Response) {
     try {
-      const { link } = await this.getGameById(id);
+      const { link, played_count } = await this.getGameById(id);
 
       const response = await fetch(link, {
         headers: {
@@ -105,6 +124,15 @@ export class GameService {
         'Content-Type',
         response.headers.get('content-type') || 'application/zip',
       );
+
+      await this.prisma.game.update({
+        where: {
+          id,
+        },
+        data: {
+          played_count: Number(played_count + 1),
+        },
+      });
 
       const buffer = Buffer.from(await response.arrayBuffer());
       return buffer;

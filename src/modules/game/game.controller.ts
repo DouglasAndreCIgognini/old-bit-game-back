@@ -11,11 +11,17 @@ export class GameController {
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
     @Query('orderBy') orderBy: string = 'title',
+    @Query('order') order: string = 'asc',
+    @Query('q') q: string = '',
+    @Query('platform') platform: string = '',
   ) {
     return this.gameService.getAllGames({
       page: Number(page),
       limit: Number(limit),
       orderBy,
+      order,
+      q,
+      platform,
     });
   }
 

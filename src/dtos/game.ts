@@ -10,6 +10,7 @@ export interface GameDto {
   link: string;
   platform: string;
   core: string;
+  played_count: number;
   description: string | null;
   image_url: string | null;
   categories: CategoryGame[];

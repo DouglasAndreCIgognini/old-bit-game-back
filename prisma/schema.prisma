@@ -14,6 +14,7 @@ model Game {
   title       String
   platform    String
   core        String
+  played_count Int @default(0)
   description String?
   image_url   String?
   created_at  DateTime @default(now())
