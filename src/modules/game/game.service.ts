@@ -1,6 +1,6 @@
 import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { GameResponseDto } from '../../dtos/game';
+import { GameDto, GameResponseDto } from '../../dtos/game';
 import { getGameDomainUrl } from '../../utils/url';
 import { Response } from 'express';
 import { GameWhereInput } from '../../generated/prisma/models';
@@ -76,7 +76,7 @@ export class GameService {
     };
   }
 
-  async getGameById(id: number) {
+  async getGameById(id: number): Promise<GameDto> {
     try {
       const game = await this.prisma.game.findUnique({
         where: { id },
